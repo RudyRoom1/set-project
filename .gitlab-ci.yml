@@ -1,0 +1,36 @@
+image: docker:19.03.12
+
+stages:
+  - build
+#  - push
+
+variables:
+  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  AWS_ECR_REPOSITORY: "$AWS_ECR_REPOSITORY"
+  AWS_REGION: "$REGION"
+  AWS_ACCESS_KEY_ID: "$ACCESS_KEY_ID"
+  AWS_SECRET_ACCESS_KEY: "$SECRET_ACCESS_KEY"
+
+services:
+  - name: docker:19.03.12-dind
+    alias: localhost
+
+
+before_script:
+  - docker version
+  - apk add --update --no-cache python3 py3-pip
+  - pip3 install awscli
+
+build:
+  stage: build
+  script:
+    - docker build -t image_service .
+
+#push:
+#  stage: push
+#  script:
+#    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ECR_REPOSITORY
+#    - docker tag $AWS_ECR_REPOSITORY:latest $AWS_ECR_REPOSITORY:$CI_COMMIT_REF_SLUG
+#    - docker push $AWS_ECR_REPOSITORY:$CI_COMMIT_REF_SLUG
