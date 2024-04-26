@@ -1,38 +1,74 @@
 package com.image.client;
 
-import com.image.consts.DynamoDbConst;
 import com.image.dto.Image;
-import com.image.repository.ImageTable;
-import java.util.UUID;
+import com.image.repository.DbConvertor;
 import org.springframework.beans.factory.annotation.Autowired;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
 public class ImageDataBaseClient {
 
-  @Autowired DynamoDbEnhancedClient dynamoDbEnhancedClient;
+    @Value("${dynamoDb.tableName}")
+    String tableName;
 
-  public void init() {}
+    @Autowired
+    DbConvertor converter;
 
-  public Integer create(Image image) {
-    DynamoDbTable<ImageTable> imageTableTable =
-        dynamoDbEnhancedClient.table(
-            DynamoDbConst.IMAGE_TABLE, TableSchema.fromBean(ImageTable.class));
-    Integer id = Integer.valueOf(UUID.randomUUID().toString());
+    @Autowired
+    DbConvertor dbConvertor;
 
-    ImageTable imageTable = new ImageTable();
-    imageTable.setId(id);
+    @Autowired DynamoDbClient dynamoDbClient;
+//
+//    public ImageDataBaseClient() {
+//        this.dynamoDbClient = DynamoDbClient.create();
+//    }
 
-    imageTableTable.putItem(imageTable);
-    return id;
-  }
+    public void init() {
+    }
 
-  public Image read(Integer id) {
-    return null;
-  }
+    public Integer create(Image image) {
+        Map<String, AttributeValue> dbImage = dbConvertor.createDbImage(image);
 
-  public void delete(Integer id) {}
+        PutItemRequest request = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(dbImage)
+                .build();
 
-  public void search(Integer id) {}
+        PutItemResponse putItemResponse = dynamoDbClient.putItem(request);
+        return image.getId();
+    }
+
+    public Image read(Integer id) {
+        return null;
+    }
+
+    public List<Image> readByLabel(String label) {
+        Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+        expressionAttributeValues.put(":labelVal", AttributeValue.builder().s(label).build());
+
+        QueryRequest queryRequest = QueryRequest.builder()
+                .tableName(tableName)
+                .indexName("LabelIndex")  // Ensure you've created an index on "Label" attribute
+                .keyConditionExpression("Label = :labelVal")
+                .expressionAttributeValues(expressionAttributeValues)
+                .build();
+
+        QueryResponse response = dynamoDbClient.query(queryRequest);
+
+        return response.items().stream().map(converter::convertToImage).collect(Collectors.toList());
+    }
+
+    public void delete(Integer id) {
+    }
+
+    public void search(Integer id) {
+    }
 }

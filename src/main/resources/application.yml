@@ -1,13 +1,33 @@
-#server:
-#  port: 8081
+server:
+  port: 8080
 #  servlet:
 #    context-path: /image
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: check
 
 spring:
   application:
     name: image_service
 
-aws:
-  accessKeyId: ${ACCESS_KEY_ID}
-  secretAccessKey: ${SECRET_ACCESS_KEY}
-  region: ${REGION}
+#aws:
+#  accessKeyId: ${ACCESS_KEY_ID}
+#  secretAccessKey: ${SECRET_ACCESS_KEY}
+#  region: ${REGION}
+
+cloud:
+  aws:
+    region:
+      static: ${REGION}
+    credentials:
+      accessKey: ${ACCESS_KEY_ID}
+      secretKey: ${SECRET_ACCESS_KEY}
+
+dynamoDb:
+  tableName: ${TABLE_NAME}
+
+s3:
+  bucketName: ${BUCKET_NAME}
