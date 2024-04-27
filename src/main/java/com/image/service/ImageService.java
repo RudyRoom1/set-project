@@ -35,9 +35,6 @@ public class ImageService {
 
     public ResponseEntity<String> create(MultipartFile file) {
         try {
-
-
-
             storageClient.create(file);
             Image dynamoRecord = imageGenerator.imageGenerator(file);
 

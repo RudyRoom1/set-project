@@ -25,11 +25,8 @@ public class ImageDataBaseClient {
     @Autowired
     DbConvertor dbConvertor;
 
-    @Autowired DynamoDbClient dynamoDbClient;
-//
-//    public ImageDataBaseClient() {
-//        this.dynamoDbClient = DynamoDbClient.create();
-//    }
+    @Autowired
+    DynamoDbClient dynamoDbClient;
 
     public void init() {
     }

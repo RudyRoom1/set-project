@@ -19,6 +19,8 @@ public class DbConvertor {
         Map<String, AttributeValue> item = new HashMap<>();
         String name = image.getObjectPath().substring(image.getObjectPath().lastIndexOf("/") + 1);
 
+        item.put("LabelValue", AttributeValue.builder().s(name).build());
+        item.put("ImageName", AttributeValue.builder().s(name).build());
         if (image.getId() != null)
             item.put("id", AttributeValue.builder().n(String.valueOf(image.getId())).build());
 
@@ -36,10 +38,6 @@ public class DbConvertor {
 
         if (image.getLabels() != null)
             item.put("labels", AttributeValue.builder().ss(image.getLabels()).build());
-
-        item.put("LabelValue", AttributeValue.builder().s(String.valueOf("image.getId()")).build());
-
-        item.put("ImageName", AttributeValue.builder().s(name).build());
 
         if (image.getStatus() != null)
             item.put("imageStatus", AttributeValue.builder().s(image.getStatus().toString()).build());
