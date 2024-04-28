@@ -1,4 +1,4 @@
-package com.image.controller;
+package com.image.controller.image;
 
 import com.image.dto.Image;
 import com.image.service.ImageService;
@@ -6,19 +6,20 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/images")
 public class ImageController {
 
     @Autowired
     ImageService imageService;
-
 
     @Operation(summary = "Get image files data by label \n")
     @GetMapping("/getImageFiles")
@@ -32,8 +33,4 @@ public class ImageController {
         return imageService.create(file);
     }
 
-    @DeleteMapping("/image/{id}")
-    public String deleteImage(@PathVariable("id") Long imageId) {
-        return "deleted";
-    }
 }

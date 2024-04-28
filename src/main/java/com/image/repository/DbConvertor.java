@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.image.consts.DateFormatter.FORMATTER;
+import java.util.stream.Collectors;
 
 @Component
 public class DbConvertor {
@@ -46,19 +46,20 @@ public class DbConvertor {
         return item;
     }
 
-    public Image convertToImage(Map<String, AttributeValue> item) {
-
-        List<String> labels = item.get("Labels").ss();
-        ImageStatus status = ImageStatus.valueOf(item.get("Status").s());
-
+    public Image fromDynamoDBItem(Map<String, AttributeValue> item) {
+        List<String> labels = item.get("labels").l().stream()
+                .map(AttributeValue::s)
+                .toList();
         return Image.builder()
-                .id(Integer.parseInt(item.get("Id").n()))
-                .objectPath(item.get("ObjectPath").s())
-                .objectSize(item.get("ObjectSize").n())
-                .timeAdded(LocalDate.parse(item.get("TimeAdded").s(), FORMATTER))
-                .timeUpdated(LocalDate.parse(item.get("TimeUpdated").s(), FORMATTER))
+                .id(Integer.parseInt(item.get("id").n()))
+                .objectPath(item.get("objectPath").s())
+                .objectSize(item.get("objectSize").s())
+                .timeAdded(LocalDate.parse(item.get("timeAdded").s(), DateTimeFormatter.ISO_DATE))
+                .timeUpdated(LocalDate.parse(item.get("timeUpdated").s(), DateTimeFormatter.ISO_DATE))
                 .labels(labels)
-                .status(status)
+                .status(ImageStatus.valueOf(item.get("imageStatus").s()))
+                .LabelValue(item.get("LabelValue").s())
+                .ImageName(item.get("ImageName").s())
                 .build();
     }
 }
