@@ -1,7 +1,7 @@
 server:
   port: 8080
-#  servlet:
-#    context-path: /image
+  servlet:
+    context-path: /images
 
 management:
   endpoints:
@@ -12,11 +12,6 @@ management:
 spring:
   application:
     name: image_service
-
-#aws:
-#  accessKeyId: ${ACCESS_KEY_ID}
-#  secretAccessKey: ${SECRET_ACCESS_KEY}
-#  region: ${REGION}
 
 cloud:
   aws:

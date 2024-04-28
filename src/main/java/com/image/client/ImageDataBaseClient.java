@@ -47,20 +47,19 @@ public class ImageDataBaseClient {
         return null;
     }
 
-    public List<Image> readByLabel(String label) {
+    public List<Image> getByLabel(String label) {
         Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
         expressionAttributeValues.put(":labelVal", AttributeValue.builder().s(label).build());
 
-        QueryRequest queryRequest = QueryRequest.builder()
+        ScanRequest scanRequest = ScanRequest.builder()
                 .tableName(tableName)
-                .indexName("LabelIndex")  // Ensure you've created an index on "Label" attribute
-                .keyConditionExpression("Label = :labelVal")
+                .filterExpression("contains(labels, :labelVal)")
                 .expressionAttributeValues(expressionAttributeValues)
                 .build();
 
-        QueryResponse response = dynamoDbClient.query(queryRequest);
+        ScanResponse response = dynamoDbClient.scan(scanRequest);
 
-        return response.items().stream().map(converter::convertToImage).collect(Collectors.toList());
+        return response.items().stream().map(converter::fromDynamoDBItem).collect(Collectors.toList());
     }
 
     public void delete(Integer id) {

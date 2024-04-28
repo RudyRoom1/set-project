@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Spring App</title>
+    <style>
+        section {
+            border: 1px solid;
+            margin: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<section>
+    <h1>Upload Image</h1>
+    <input type="file" id="fileUpload"/>
+    <button onclick="uploadImage()">Upload</button>
+</section>
+
+<section>
+    <h1>Get Images By Label</h1>
+    <input type="text" id="labelInput" placeholder="Enter label"/>
+    <button onclick="getImagesByLabel()">Get Images</button>
+    <ul id="imageList"></ul>
+</section>
+<section id="responseSection"></section>
+<script>
+    async function uploadImage() {
+        const inputFile = document.querySelector('#fileUpload');
+        const formData = new FormData();
+        formData.append('file', inputFile.files[0]);
+
+        const response = await fetch('/images/uploadImage', {
+            method: 'POST',
+            body: formData
+        });
+
+        alert(await response.text()); // Show a simple alert with the server response
+    }
+
+    async function getImagesByLabel() {
+  const label = document.querySelector('#labelInput').value;
+  const response = await fetch(`/images/getImageFiles?label=${label}`);
+  const images = await response.json();
+  const responseSection = document.querySelector('#responseSection');
+  responseSection.innerHTML = ''; // Clear the section
+
+  // Iterate through each image object
+  images.forEach((image, index) => {
+    // Convert the image object to a string and format it with indentation
+    const imageText = JSON.stringify(image, null, 2);
+
+    // Create a new paragraph element
+    const p = document.createElement('p');
+    // Set the innerText as the formatted image text
+    p.innerText = `Item ${index + 1}:\n${imageText}`;
+
+    // Append the paragraph to the response section
+    responseSection.appendChild(p);
+  });
+}
+</script>
+</body>
+</html>

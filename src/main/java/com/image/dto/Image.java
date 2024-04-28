@@ -17,7 +17,6 @@ public class Image {
     private LocalDate timeUpdated;
     private List<String> labels;
     private ImageStatus status;
-
-    public void init(List args) {
-    }
+    private String LabelValue;
+    private String ImageName;
 }

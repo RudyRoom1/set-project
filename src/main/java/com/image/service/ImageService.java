@@ -51,7 +51,7 @@ public class ImageService {
 
     public ResponseEntity<List<Image>> getFilesByLabel(String label) {
 
-        return new ResponseEntity<>(dbClient.readByLabel(label), HttpStatus.OK);
+        return new ResponseEntity<>(dbClient.getByLabel(label), HttpStatus.OK);
     }
 
     public Response delete(Integer id) {
